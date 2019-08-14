@@ -22,6 +22,8 @@ const storybookDevDeps = [
   "@storybook/react",
   "@storybook/storybook-deployer",
   "@storybook/theming",
+  "babel-loader",
+  "react-docgen-typescript-loader"
 ];
 
 async function copyTemplateFiles(options) {
@@ -43,6 +45,22 @@ async function addScripts() {
 
   pkg.scripts = Object.assign(pkg.scripts, storybookScripts);
   await jsonfile.writeFile(pkgPath, pkg, { spaces: 2 });
+}
+
+async function updateTsConfig() {
+  // Need to add the `stories` directory to the rootDirs
+  // config for typescript to pick it up.
+  const tsconfig = await jsonfile.readFile('./tsconfig.json');
+  let rootDirs = ["stories"];
+
+  const rootDir = tsconfig.compilerOptions["rootDir"];
+  if (rootDir !== "") {
+    rootDirs.push(rootDir);
+  }
+  tsconfig.compilerOptions["rootDir"] = undefined;
+  tsconfig.compilerOptions["rootDirs"] = rootDirs;
+
+  await jsonfile.writeFile('./tsconfig.json', tsconfig, { spaces: 2 });
   return;
 }
 
@@ -84,7 +102,7 @@ export async function createStorybook(options) {
   const tasks = new Listr([
     {
       title: 'Copying .storybook files',
-      task: () => copyTemplateFiles(configOpts),
+      task: () => copyTemplateFiles(configOpts)
     },
     {
       title: 'Copying example story',
@@ -92,20 +110,25 @@ export async function createStorybook(options) {
     },
     {
       title: 'Adding npm scripts to package.json',
-      task: () => addScripts(),
+      task: () => addScripts()
     },
     {
-      title: 'Install dev-dependencies',
+      title: 'Updating tsconfig.json',
+      task: () => updateTsConfig()
+    },
+    {
+      title: 'Installing dev-dependencies',
       task: () =>
         install(
           storybookDevDeps,
           { cwd: options.targetDirectory, dev: true }
         )
-    },
+    }
   ]);
 
   await tasks.run();
 
   console.log('%s Project ready', chalk.green.bold('DONE'));
+  console.log('Run %s to start the project.', chalk.green('npm run storybook'));
   return true;
 }

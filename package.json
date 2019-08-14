@@ -1,6 +1,6 @@
 {
   "name": "create-storybook-starter",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "NYPL Storybook Starter",
   "main": "src/cli.js",
   "bin": {
