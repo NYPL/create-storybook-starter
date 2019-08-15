@@ -1,5 +1,8 @@
 ## CHANGELOG
 
+### 0.0.3
+- Adding @storybook/addon-notes package.
+
 ### 0.0.2
 - Updating config to add rootDirs to tsconfig.json.
 
