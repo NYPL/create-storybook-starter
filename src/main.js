@@ -17,6 +17,7 @@ const storybookDevDeps = [
   "@storybook/addon-info",
   "@storybook/addon-knobs",
   "@storybook/addon-links",
+  "@storybook/addon-notes",
   "@storybook/addon-storysource",
   "@storybook/addons",
   "@storybook/react",
